@@ -242,3 +242,7 @@ cars-grid {
   border-radius: 4px;
   border: 1px solid #ccc;
 }
+.input-error {
+    border: 2px solid red !important;
+    background-color: #fce8e6 !important;
+}
