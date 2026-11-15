@@ -173,7 +173,7 @@
 				</div>
 
 				<div id="booking-form-container" style="display: none; margin-top: 20px;">
-					<form id="booking-form" action="" method="post">
+					<form id="booking-form" action="#" method="post">
 						<fieldset>
 							<legend>بيانات طلب الحجز</legend>
 							<p>
@@ -187,24 +187,24 @@
 								<input type="text" id="national-id" name="national-id" maxlength="11" />
 							</p>
 							<p>
-								<label for="start-date">تاريخ بداية التأجير (إلزامي):</label>
+								<label for="start-date">تاريخ بداية التأجير (بصيغة yyyy-mm-dd مثال 20-11-2026 - إلزامي):</label>
 								<br />
-								<input type="date" id="start-date" name="start-date" dir="ltr" />
+								<input type="text" id="start-date" name="start-date" dir="ltr" />
 							</p>
 							<p>
-								<label for="end-date">تاريخ نهاية التأجير (إلزامي):</label>
+								<label for="end-date">تاريخ نهاية التأجير (بصيغة yyyy-mm-dd مثال 05-12-2026 - إلزامي):</label>
 								<br />
-								<input type="date" id="end-date" name="end-date" dir="ltr" />
+								<input type="text" id="end-date" name="end-date" dir="ltr" />
 							</p>
 							<p>
-								<label for="phone">رقم الموبايل:</label>
+								<label for="phone">رقم الموبايل (09xxxxxxxx):</label>
 								<br />
-								<input type="text" id="phone" name="phone" placeholder="09xxxxxxxx" />
+								<input type="tel" id="phone" name="phone" />
 							</p>
 							<p>
 								<label for="email">البريد الإلكتروني:</label>
 								<br />
-								<input type="text" id="email" name="email" />
+								<input type="email" id="email" name="email" />
 							</p>
 							<p>
 								<button type="submit" id="btn-submit" class="btn">إرسال الطلب</button>

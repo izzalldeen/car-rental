@@ -1,11 +1,11 @@
 $(document).ready(function () {
 
-    // 1. إظهار البطاقات تدريجياً (تأثير بسيط باستخدام jQuery من المنهاج)[cite: 3]
+    // 1. إظهار بطاقات السيارات تدريجياً عند تحميل الصفحة
     $(".card").hide().each(function (i) {
         $(this).fadeIn(600);
     });
 
-    // 2. إظهار وإخفاء تفاصيل السيارة عبر jQuery (البند 1.3 في نص الوظيفة)[cite: 96]
+    // 2. إظهار وإخفاء تفاصيل السيارة عبر jQuery
     $('.toggle-details').off('change').on('change', function () {
         var detailsRow = $(this).closest('tr').next('.car-details');
         if ($(this).is(':checked')) {
@@ -15,14 +15,11 @@ $(document).ready(function () {
         }
     });
 
-    // 3. مراقبة تحديد أو إلغاء تحديد السيارات
+    // 3. مراقبة تحديد السيارات: عند اختيار أي سيارة نزيل تلوين الخطأ عن الحقول
     $('input[name="car"]').on('change', function () {
         var selectedCars = $('input[name="car"]:checked');
         if (selectedCars.length > 0) {
             $('#booking-form input, #booking-form select').removeClass('input-error');
-        } else {
-            $('#booking-form input, #booking-form select').addClass('input-error');
-            alert('يرجى اختيار سيارة واحدة على الأقل للمتابعة!');
         }
     });
 
@@ -36,7 +33,7 @@ $(document).ready(function () {
             return;
         }
 
-        // إظهار نموذج الحجز فوراً وانتقال سلس للشاشة
+        // إظهار نموذج الحجز والانتقال إليه بسلاسة
         $('#booking-form-container').fadeIn();
         $('html, body').animate({
             scrollTop: $("#booking-form-container").offset().top
@@ -66,8 +63,8 @@ $(document).ready(function () {
         var phone = $('#phone').val().trim();
         var email = $('#email').val().trim();
 
-        // أ. التحقق من الاسم الكامل (أحرف هجائية عربية فقط - حسب متطلبات الوظيفة)[cite: 96]
-        var arabicRegex = /^[\u0600-\u06FF\s]+$/;
+        // أ. التحقق من الاسم الكامل (أحرف هجائية عربية فقط )
+        var arabicRegex = /^[\u0621-\u064A\s]+$/;
         if (fullName !== "" && !arabicRegex.test(fullName)) {
             alert('خطأ: الاسم الكامل يجب أن يحتوي على أحرف هجائية عربية فقط!');
             $('#fullname').addClass('input-error').focus();
@@ -75,7 +72,7 @@ $(document).ready(function () {
             return;
         }
 
-        // ب. التحقق من الرقم الوطني (11 خانة، وأول خانتين من 01 إلى 14 - إلزامي)[cite: 96, 97]
+        // ب. التحقق من الرقم الوطني (11 خانة، وأول خانتين من 01 إلى 14 - إلزامي)
         var nationalIdRegex = /^(0[1-9]|1[0-4])\d{9}$/;
         if (nationalId === "") {
             alert('خطأ: حقل الرقم الوطني إلزامي!');
@@ -88,14 +85,45 @@ $(document).ready(function () {
             return;
         }
 
-        // ج. التحقق من تواريخ البداية والنهاية والتسلسل الزمني (إلزامي)[cite: 96, 97]
+        // ج. التحقق من تواريخ البداية والنهاية بصيغة yyyy-mm-dd والتسلسل الزمني (إلزامي)
         if (startDateStr === "" || endDateStr === "") {
             alert('خطأ: تاريخا بداية ونهاية التأجير إلزاميان!');
             return;
         }
 
-        var startDate = new Date(startDateStr);
-        var endDate = new Date(endDateStr);
+        // فحص صحة التاريخ قبل استخدامه لحساب عدد الأيام
+        function parseYMD(dateText) {
+            var dateRegex = /^(\d{4})-(\d{2})-(\d{2})$/;
+            var parts = dateRegex.exec(dateText);
+            if (parts === null) {
+                return null;
+            }
+            var year = parseInt(parts[1], 10);
+            var month = parseInt(parts[2], 10);
+            var day = parseInt(parts[3], 10);
+            var dateObj = new Date(year, month - 1, day);
+            if (dateObj.getFullYear() !== year || dateObj.getMonth() !== month - 1 || dateObj.getDate() !== day) {
+                return null;
+            }
+            return dateObj;
+        }
+
+        var startDate = parseYMD(startDateStr);
+        var endDate = parseYMD(endDateStr);
+
+        if (startDate === null) {
+            alert('خطأ: تاريخ البداية يجب أن يكتب بصيغة yyyy-mm-dd (مثال: 2026-11-20)!');
+            $('#start-date').addClass('input-error').focus();
+            $('#start-date').select();
+            return;
+        }
+
+        if (endDate === null) {
+            alert('خطأ: تاريخ النهاية يجب أن يكتب بصيغة yyyy-mm-dd (مثال: 2026-12-05)!');
+            $('#end-date').addClass('input-error').focus();
+            $('#end-date').select();
+            return;
+        }
 
         if (endDate <= startDate) {
             alert('خطأ: يجب أن يكون تاريخ نهاية التأجير لاحقاً لتاريخ البداية!');
@@ -104,7 +132,7 @@ $(document).ready(function () {
             return;
         }
 
-        // د. التحقق من رقم الموبايل (يبدأ ببادئات سيريتل أو MTN المعتمدة)[cite: 96, 97]
+        // د. التحقق من رقم الموبايل (يبدأ ببادئات سيريتل أو MTN المعتمدة)
         var phoneRegex = /^(093|094|095|096|098|099)\d{7}$/;
         if (phone !== "" && !phoneRegex.test(phone)) {
             alert('خطأ: رقم الموبايل غير صحيح! يجب أن يتكون من 10 أرقام ويبدأ ببادئة معتمدة لشبكتي سيريتل أو MTN.');
@@ -113,15 +141,16 @@ $(document).ready(function () {
             return;
         }
 
-        // هـ. التحقق من البريد الإلكتروني (حسب معايير المنهاج البسيطة)[cite: 63]
-        if (email !== "" && (email.length < 6 || email.indexOf('@') === -1 || email.indexOf('.') === -1)) {
-            alert('خطأ: صيغة البريد الإلكتروني غير صحيحة!');
-            $('#email').addClass('input-error').focus();
-            $('#email').select();
-            return;
+        // هـ. التحقق من البريد الإلكتروني
+        var emailRegex = /^[^@\s]+@[^@\s]+\.[^@\s]{2,}$/;
+        if (email !== "" && !emailRegex.test(email)) {
+        alert('خطأ: صيغة البريد الإلكتروني غير صحيحة!');
+        $('#email').addClass('input-error').focus();
+        $('#email').select();
+        return;
         }
 
-        // حساب عدد أيام التأجير والمبالغ والخصم (5% إذا زادت المدة عن 10 أيام - البند 1.4)[cite: 97]
+        // حساب عدد أيام التأجير والمبالغ والخصم (5% إذا زادت المدة عن 10 أيام)
         var timeDiff = endDate.getTime() - startDate.getTime();
         var daysCount = Math.ceil(timeDiff / (1000 * 3600 * 24));
 
@@ -152,7 +181,7 @@ $(document).ready(function () {
         var discountAmount = (grandTotalBeforeDiscount * discountPercent) / 100;
         var finalTotal = grandTotalBeforeDiscount - discountAmount;
 
-        // رسالة النجاح النهائية المطابقة لمتطلبات سلم التصحيح[cite: 97]
+        // رسالة النجاح النهائية 
         var message = "=== تم حجز السيارات بنجاح! ===\n\n";
         message += "السيارات المختارة:\n";
         
